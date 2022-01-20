@@ -18,7 +18,7 @@ class wendel extends Thread {
 
 
         File[] samples = { new File("sounds/kick_16bit.wav"), new File("sounds/snare_16bit.wav"),
-                new File("sounds/CH_16bit.wav"), new File("sounds/OH_16bit.wav") };
+                new File("sounds/CH_16bit.wav"), new File("sounds/OH_16bit.wav"), new File("sounds/silence.wav") };
 
         //byte[] pattern = readPattern("default.ser");
 
@@ -38,10 +38,6 @@ class wendel extends Thread {
         playPattern(bpm, samples, pattern);
         
 
-        System.out.println("type anything");
-        bpm = scanner.nextDouble();
-        //scanner.close();
-
     }
 
     // savePattern(pattern, "array");
@@ -52,9 +48,18 @@ class wendel extends Thread {
         Timer clock = new Timer();
         patternTask task = new patternTask();
         bpm = (((1 / ((double)bpm / 60)) * 1000) / 2);
+        //bpm -= 10;
         System.out.println((long)bpm);
-
-        clock.schedule(task, 0, (long)bpm);
+        
+        //clip = queueSound(stream, clip, samples[pattern[0]]);
+        clock.scheduleAtFixedRate(task, 0, (long)bpm);
+        
+        // clip.start();
+        // synchronized (signalMain) {  
+        //     signalMain.wait();
+        //     // System.out.println("Signal received at " +System.currentTimeMillis());
+        //     clip.start();
+        // }
 
         for (int i = 0; i < pattern.length; i++) {
             
@@ -76,7 +81,7 @@ class wendel extends Thread {
             }
             synchronized (signalMain) {  
                 signalMain.wait();
-                System.out.println("Signal received at " +System.currentTimeMillis());
+                // System.out.println("Signal received at " +System.currentTimeMillis());
                 clip.start();
             }
             

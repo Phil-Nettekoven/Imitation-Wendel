@@ -13,6 +13,7 @@ public class patternTask extends TimerTask{
         synchronized(wendel.signalMain){
         //System.out.println("task task");
         wendel.signalMain.notify();
+        System.out.println("Signal sent at " +System.currentTimeMillis());
         }
     }
 }
