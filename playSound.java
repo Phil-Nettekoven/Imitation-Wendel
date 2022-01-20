@@ -4,10 +4,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
-/**
- *
- * @author PN
- */
+//NOT USED
 public class playSound implements Runnable{
     Clip clip = null;
     File file = null;
