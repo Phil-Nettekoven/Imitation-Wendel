@@ -17,18 +17,18 @@ class wendel extends Thread {
         scanner = new Scanner(System.in);
 
 
-        File[] samples = { new File("sounds/kick_24bit.wav"), new File("sounds/snare_24bit.wav"),
-                new File("sounds/CH_24bit.wav"), new File("sounds/OH_24bit.wav") };
+        File[] samples = { new File("sounds/kick_16bit.wav"), new File("sounds/snare_16bit.wav"),
+                new File("sounds/CH_16bit.wav"), new File("sounds/OH_16bit.wav") };
 
-        byte[] pattern = readPattern("default.ser");
+        //byte[] pattern = readPattern("default.ser");
 
-        // byte[] pattern = {
-        //     0,2,1,2,0,2,1,3,
-        //     0,2,1,2,0,2,1,3,
-        //     0,2,1,2,0,2,1,3,
-        //     0,2,1,2,0,2,1,3,
-        //     0,2,1,2,0,2,1,3,
-        // };
+        byte[] pattern = {
+            0,2,1,2,0,2,1,3,
+            0,2,1,2,0,2,1,3,
+            0,2,1,2,0,2,1,3,
+            0,2,1,2,0,2,1,3,
+            0,2,1,2,0,2,1,3,
+        };
 
         double bpm;
 
