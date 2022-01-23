@@ -8,10 +8,17 @@ public class Pattern implements Serializable {
     Pattern(int size) {
         this.size = size + 1;
         p = new beat[this.size];
+        for (int i = 0; i < this.size; i++){
+            p[i] = new beat();
+        }
     }
 
     public beat getBeat(int i) {
         return p[i];
+    }
+
+    public int getSize(){
+        return size;
     }
 
     public void growPattern(int num) {

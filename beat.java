@@ -3,7 +3,7 @@ public class beat {
     private long offset = 0; // no offset
     private boolean[] status = { false, false, false, false };
 
-    public byte[] getBeat() {
+    public byte[] getBeatArray() {
         return beats;
     }
 

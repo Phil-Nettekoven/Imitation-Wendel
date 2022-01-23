@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.Scanner;
 import java.util.Timer;
+import java.util.concurrent.TimeUnit;
+
 import javax.sound.sampled.*;
 
 class wendel extends Thread {
@@ -17,6 +19,7 @@ class wendel extends Thread {
         scanner = new Scanner(System.in);
         String input = null;
         double bpm = 120.0;
+        Pattern curPattern = new Pattern(16);
 
         // File[] samples = { new File("sounds/kick_16bit.wav"), new
         // File("sounds/snare_16bit.wav"),
@@ -27,7 +30,6 @@ class wendel extends Thread {
 
         // dataManager.saveKit(samples, "SecondArrangement");
 
-        pattern currentPattern = new pattern(16);
         File[] currentKit = dataManager.readKit("SecondArrangement.kit");
 
         System.out.println("");
@@ -45,19 +47,26 @@ class wendel extends Thread {
             }
 
             input = scanner.nextLine().toUpperCase();
-
             switch (input) {
                 case ("A"):
-                    playPattern(currentKit, currentPattern, bpm);
+                    playPattern(currentKit, curPattern, bpm);
                     invalidInput = false;
                     break;
                 case ("B"):
+                    curPattern = editPattern(curPattern);
                     invalidInput = false;
                     break;
                 case ("C"):
+                    savePattern(curPattern);
                     invalidInput = false;
                     break;
                 case ("D"):
+                    invalidInput = false;
+                    break;
+                case ("F"):
+                    invalidInput = false;
+                    break;
+                case ("G"):
                     invalidInput = false;
                     break;
                 case ("E"):
@@ -76,20 +85,22 @@ class wendel extends Thread {
 
     }
 
-    public static void mainMenu() {
+    public static void mainMenu() throws InterruptedException {
         cls();
         System.out.println("philn's \033[3m'Imitation Wendel'\033[0m, v" + version + "!");
         System.out.print("\nAre you ready to sequence?: \n\n");
         System.out.print("A) Play current pattern\n");
         System.out.print("B) Edit current pattern\n");
-        System.out.print("C) Load new pattern\n");
-        System.out.print("D) Load new kit\n");
+        System.out.print("C) Save current pattern\n");
+        System.out.print("D) Load new pattern\n");
+        System.out.print("F) Load new kit\n");
+        System.out.print("G) Save current kit\n");
         System.out.print("S) Set BPM\n");
         System.out.print("\nE) Exit\n\n");
 
     }
 
-    public static void playPattern(File[] samples, byte[] pattern, double bpm)
+    public static void playPattern(File[] samples, Pattern pattern, double bpm)
             throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
 
         cls();
@@ -101,15 +112,38 @@ class wendel extends Thread {
 
         clock.scheduleAtFixedRate(new patternTask(), 0, bpmLong);
 
-        for (int i = 0; i < pattern.length; i++) {
-            clip = queueSound(stream, clip, samples[pattern[i]]);
+        for (int i = 0; i < pattern.getSize(); i++) {
+            byte beat = pattern.getBeat(i).getBeatArray()[0]; // temp
+            clip = queueSound(stream, clip, samples[beat]);
             clipStart();
         }
 
     }
 
-    public static void editPattern() {
+    public static Pattern loadPattern() {
+        cls();
+        System.out.println("Enter a filename: ");
+        String fileName = scanner.nextLine();
+        return dataManager.readPattern(fileName);
+    }
 
+    public static void savePattern(Pattern curPattern) {
+        cls();
+        System.out.println("Enter a filename: ");
+        String fileName = scanner.nextLine();
+        dataManager.savePattern(curPattern, fileName);
+    }
+
+    public static Pattern editPattern(Pattern curPattern) {
+
+        for (int i = 1; i < curPattern.getSize(); i++) {
+            cls();
+            System.out.println("ENTER BEAT NUM: ");
+            byte s = scanner.nextByte();
+            curPattern.getBeat(i).setBeats(0, s);
+        }
+
+        return curPattern;
     }
 
     public static double setBPM() {

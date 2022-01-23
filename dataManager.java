@@ -1,8 +1,7 @@
 import java.io.*;
 
-
 public class dataManager {
-    public static void savePattern(byte[] save, String fileName) {
+    public static void savePattern(Pattern save, String fileName) {
         try {
             FileOutputStream fileOut = new FileOutputStream("./patterns/" + fileName + ".ptrn");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -15,12 +14,12 @@ public class dataManager {
         }
     }
 
-    public static byte[] readData(String fileName) {
-        byte[] p;
+    public static Pattern readPattern(String fileName) {
+        Pattern p;
         try {
             FileInputStream fileIn = new FileInputStream("./patterns/" + fileName);
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            p = (byte[]) in.readObject();
+            p = (Pattern) in.readObject();
             in.close();
             fileIn.close();
             System.out.println("Pattern loaded successfully.");
@@ -28,7 +27,7 @@ public class dataManager {
         } catch (IOException i) {
             i.printStackTrace();
         } catch (ClassNotFoundException c) {
-            System.out.println("Pattern '"+fileName+"' not found.");
+            System.out.println("Pattern '" + fileName + "' not found.");
             c.printStackTrace();
         }
         return null;
@@ -48,7 +47,7 @@ public class dataManager {
     }
 
     public static File[] readKit(String fileName) {
-        
+
         try {
             FileInputStream fileIn = new FileInputStream("./kits/" + fileName);
             ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -60,12 +59,10 @@ public class dataManager {
         } catch (IOException i) {
             i.printStackTrace();
         } catch (ClassNotFoundException c) {
-            System.out.println("Kit '"+fileName+"' not found.");
+            System.out.println("Kit '" + fileName + "' not found.");
             c.printStackTrace();
         }
         return null;
     }
-    
 
-    
 }
