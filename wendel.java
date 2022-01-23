@@ -4,102 +4,130 @@ import java.util.Timer;
 import javax.sound.sampled.*;
 
 class wendel extends Thread {
-    public static wendel signalMain = null;
-    public static AudioInputStream stream = null;
-    public static Clip clip = null;
-    public static Scanner scanner = null;
+    static wendel signalMain = null;
+    private static AudioInputStream stream = null;
+    private static Clip clip = null;
+    private static Scanner scanner = null;
+    private static String version = "1.0";
 
     public static void main(String[] args)
             throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
 
         signalMain = new wendel();
         scanner = new Scanner(System.in);
+        String input = null;
+        double bpm = 120.0;
 
+        // File[] samples = { new File("sounds/kick_16bit.wav"), new
+        // File("sounds/snare_16bit.wav"),
+        // new File("sounds/CH_16bit.wav"), new File("sounds/OH_16bit.wav"), new
+        // File("BLANK"), new File("BLANK"),
+        // new File("BLANK"), new File("BLANK"), new File("BLANK"), new
+        // File("sounds/silence.wav") };
 
-        // File[] samples = { new File("sounds/kick_16bit.wav"), new File("sounds/snare_16bit.wav"),
-        //         new File("sounds/CH_16bit.wav"), new File("sounds/OH_16bit.wav"), new File("sounds/silence.wav") };
+        // dataManager.saveKit(samples, "SecondArrangement");
 
-        //saveData.saveKit(samples, "SecondArrangement");
+        pattern currentPattern = new pattern(16);
+        File[] currentKit = dataManager.readKit("SecondArrangement.kit");
 
-        byte[] pattern = saveData.readData("default.ptrn");
-        File[] samples = saveData.readKit("SecondArrangement.kit");
+        System.out.println("");
 
-        // byte[] pattern = { 6,
-        //     0,2,1,2,0,2,1,3,
-        //     0,2,1,2,0,2,1,3,
-        //     0,2,1,2,0,2,1,3,
-        //     0,2,1,2,0,2,1,3,
-        //     0,2,1,2,0,2,1,3,
-        // };
+        boolean invalidInput = false;
+        boolean isRunning = true;
+        while (isRunning) {
+            mainMenu();
 
-        //saveData.savePattern(pattern, "default");
+            if (invalidInput) {
+                System.out.print("Invalid Input!\n");
+                System.out.print("Enter an option: ");
+            } else {
+                System.out.print("\nEnter an option: ");
+            }
 
-        double bpm;
+            input = scanner.nextLine().toUpperCase();
 
-        System.out.println("Enter a BPM: ");
-        bpm = scanner.nextDouble();
+            switch (input) {
+                case ("A"):
+                    playPattern(currentKit, currentPattern, bpm);
+                    invalidInput = false;
+                    break;
+                case ("B"):
+                    invalidInput = false;
+                    break;
+                case ("C"):
+                    invalidInput = false;
+                    break;
+                case ("D"):
+                    invalidInput = false;
+                    break;
+                case ("E"):
+                    isRunning = false;
+                    break;
+                case ("S"):
+                    bpm = setBPM();
+                    invalidInput = false;
+                    break;
+                default:
+                    invalidInput = true;
 
-        playPattern(bpm, samples, pattern);
-        playPattern(bpm, samples, pattern);
-        playPattern(bpm, samples, pattern);
-        playPattern(bpm, samples, pattern);
-        playPattern(bpm, samples, pattern);
+            }
+
+        }
 
     }
 
-    // savePattern(pattern, "array");
+    public static void mainMenu() {
+        cls();
+        System.out.println("philn's \033[3m'Imitation Wendel'\033[0m, v" + version + "!");
+        System.out.print("\nAre you ready to sequence?: \n\n");
+        System.out.print("A) Play current pattern\n");
+        System.out.print("B) Edit current pattern\n");
+        System.out.print("C) Load new pattern\n");
+        System.out.print("D) Load new kit\n");
+        System.out.print("S) Set BPM\n");
+        System.out.print("\nE) Exit\n\n");
 
-    public static void playPattern(double bpm, File[] samples, byte[] pattern)
+    }
+
+    public static void playPattern(File[] samples, byte[] pattern, double bpm)
             throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
 
+        cls();
         Timer clock = new Timer();
-        patternTask task = new patternTask();
-        bpm = (((1 / ((double)bpm / 60)) * 1000) / 2);
-        //bpm -= 10;
-        System.out.println((long)bpm);
-        
-        //clip = queueSound(stream, clip, samples[pattern[0]]);
-        clock.scheduleAtFixedRate(task, 0, (long)bpm);
-        
-        // clip.start();
-        // synchronized (signalMain) {  
-        //     signalMain.wait();
-        //     // System.out.println("Signal received at " +System.currentTimeMillis());
-        //     clip.start();
-        // }
+
+        long bpmLong = (long) (((1 / ((double) bpm / 60)) * 1000) / 2); // converts bpm into milliseconds between beats
+                                                                        // in 4/
+        // System.out.println(bpmLong);
+
+        clock.scheduleAtFixedRate(new patternTask(), 0, bpmLong);
 
         for (int i = 0; i < pattern.length; i++) {
-            
-            switch (pattern[i]){ 
-                case (0):
-                    clip = queueSound(stream, clip, samples[0]);
-                    break;
-                case (1):
-                    clip = queueSound(stream, clip, samples[1]);
-                    break;
-                case (2):
-                    clip = queueSound(stream, clip, samples[2]);
-                    break;
-                case (3):
-                    clip = queueSound(stream, clip, samples[3]);
-                    break;
-                    case(6):
-                    clip = queueSound(stream, clip, samples[4]);
-                    break;
-                default:
-                    System.out.println("Invalid sample");
-            }
-            synchronized (signalMain) {  
-                signalMain.wait();
-                //System.out.println("Signal received at " +System.currentTimeMillis());
-                clip.start();
-                //System.out.println("Sample played at " +System.currentTimeMillis());
-            }
-            
-            //clock.schedule(task, 0, (long)bpm);
+            clip = queueSound(stream, clip, samples[pattern[i]]);
+            clipStart();
         }
-        clock.cancel();
 
+    }
+
+    public static void editPattern() {
+
+    }
+
+    public static double setBPM() {
+        double bpm = 120.0;
+        cls();
+
+        System.out.print("Enter BPM: ");
+        bpm = scanner.nextDouble();
+
+        return bpm;
+    }
+
+    public static void clipStart() throws InterruptedException {
+        synchronized (signalMain) {
+            signalMain.wait();
+            // System.out.println("Signal received at " + System.currentTimeMillis());
+            clip.start();
+        }
     }
 
     public static Clip queueSound(AudioInputStream stream, Clip clip, File sound)
@@ -110,5 +138,9 @@ class wendel extends Thread {
         return clip;
     }
 
-    
+    public static void cls() { // clears terminal
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
 }

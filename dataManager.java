@@ -1,7 +1,7 @@
 import java.io.*;
 
 
-public class saveData {
+public class dataManager {
     public static void savePattern(byte[] save, String fileName) {
         try {
             FileOutputStream fileOut = new FileOutputStream("./patterns/" + fileName + ".ptrn");
@@ -28,7 +28,7 @@ public class saveData {
         } catch (IOException i) {
             i.printStackTrace();
         } catch (ClassNotFoundException c) {
-            System.out.println("Pattern not found!");
+            System.out.println("Pattern '"+fileName+"' not found.");
             c.printStackTrace();
         }
         return null;
@@ -60,7 +60,7 @@ public class saveData {
         } catch (IOException i) {
             i.printStackTrace();
         } catch (ClassNotFoundException c) {
-            System.out.println("Pattern not found!");
+            System.out.println("Kit '"+fileName+"' not found.");
             c.printStackTrace();
         }
         return null;
