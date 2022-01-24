@@ -1,4 +1,6 @@
-public class beat {
+import java.io.Serializable;
+
+public class beat implements Serializable{
     private byte[] beats = { 9, 9, 9, 9 };
     private long offset = 0; // no offset
     private boolean[] status = { false, false, false, false };

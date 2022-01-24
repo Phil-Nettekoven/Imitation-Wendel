@@ -5,8 +5,8 @@ public class patternTask extends TimerTask{
         
     }
     public void run(){
-        synchronized(wendel.signalMain){
-        wendel.signalMain.notify();
+        synchronized(Wendel.signalMain){
+        Wendel.signalMain.notify();
         //System.out.println("Signal sent at " +System.currentTimeMillis());
         }
     }

@@ -4,6 +4,7 @@ import java.util.Arrays;
 public class Pattern implements Serializable {
     private int size;
     private beat[] p;
+    private double bpm = 120;
 
     Pattern(int size) {
         this.size = size + 1;
@@ -19,6 +20,19 @@ public class Pattern implements Serializable {
 
     public int getSize(){
         return size;
+    }
+
+    public double getBpm(){
+        return bpm;
+    }
+
+    public void setBpm(double newBpm){
+        if (newBpm < 1){
+        System.out.println("BPM must be non-zero, positive double. ");
+        return;
+        } else{
+        bpm = newBpm;
+        }
     }
 
     public void growPattern(int num) {
