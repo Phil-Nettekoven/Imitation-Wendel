@@ -148,21 +148,40 @@ class Wendel extends Thread {
 
     public static void displayBar(Pattern curPattern, int i){
         cls();
+        int barIndex = i;
+        boolean[][] barBools = getBarBools(curPattern, barIndex);
         char x = 'x';
         System.out.print("           _______________BAR "+ ((i/8)+1)+"________________\n");
         System.out.print("          |   1    |   2    |   3    |   4    |\n");
-        System.out.print("CUSTOM 2  |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("CUSTOM 1  |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("OPEN HAT  |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("CLOSED HAT|"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("KICK      |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("SNARE     |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("CUSTOM 2  |"+beatDisplay(barBools[0][5])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("CUSTOM 1  |"+beatDisplay(barBools[0][4])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("OPEN HAT  |"+beatDisplay(barBools[0][3])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("CLOSED HAT|"+beatDisplay(barBools[0][2])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("KICK      |"+beatDisplay(barBools[0][1])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("SNARE     |"+beatDisplay(barBools[0][0])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
         System.out.print("           ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n");
         
     }
 
-    private boolean[][] beatDisplay(Pattern curPattern, int i){
-        return curPattern.getBeat(i).getStatusArray();
+    private static boolean[][] getBarBools(Pattern curPattern, int index){
+        boolean[][] barBeatStatus = new boolean[10][6];
+        for (int i = index; i < (index+4); i++){
+            System.out.print(i);
+            for (int j = 0; j < curPattern.getBeat(i).getStatusArray().length; j++){
+                System.out.print(j);
+                barBeatStatus[i][j] = curPattern.getBeat(i).getStatusArray()[j];
+            }
+        }
+
+        return barBeatStatus;
+    }
+
+    private static char beatDisplay(boolean bool){
+        if (bool){
+            return 'X';
+        } else{
+            return ' ';
+        }
     }
 
     public static double setBPM(Pattern curPattern) {
