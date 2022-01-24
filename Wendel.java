@@ -134,12 +134,35 @@ class Wendel extends Thread {
     }
 
     public static Pattern editPattern(Pattern curPattern) {
+        int index = 1;
+        if (index > 0){
+            displayBar(curPattern, index);
+        } else{
+            System.out.println("Error, index must be 1 or greater, but is "+index);
+        }
 
+        String test = scanner.nextLine();
+        System.out.println("test" +test);
         return curPattern;
     }
 
-    public static void displayBar(Pattern curPattern){
+    public static void displayBar(Pattern curPattern, int i){
+        cls();
+        char x = 'x';
+        System.out.print("           _______________BAR "+ ((i/8)+1)+"________________\n");
+        System.out.print("          |   1    |   2    |   3    |   4    |\n");
+        System.out.print("CUSTOM 2  |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("CUSTOM 1  |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("OPEN HAT  |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("CLOSED HAT|"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("KICK      |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("SNARE     |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
+        System.out.print("           ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n");
         
+    }
+
+    private boolean[][] beatDisplay(Pattern curPattern, int i){
+        return curPattern.getBeat(i).getStatusArray();
     }
 
     public static double setBPM(Pattern curPattern) {
@@ -169,13 +192,13 @@ class Wendel extends Thread {
     }
 
     public static void cls() { // clears terminal
-        // System.out.print("\033[H\033[2J");
-        // System.out.flush();
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 
     public static Pattern initPattern(){
 
-        Pattern defaultPattern = new Pattern(16);
+        Pattern defaultPattern = new Pattern(2);
         defaultPattern.getBeat(0).setBeats(0, 9);
         defaultPattern.getBeat(1).setBeats(0, 0);
         defaultPattern.getBeat(2).setBeats(0, 2);

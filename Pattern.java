@@ -6,8 +6,8 @@ public class Pattern implements Serializable {
     private beat[] p;
     private double bpm = 120;
 
-    Pattern(int size) {
-        this.size = size + 1;
+    Pattern(int numBars) {
+        this.size = (numBars*8) + 1;
         p = new beat[this.size];
         for (int i = 0; i < this.size; i++){
             p[i] = new beat();
