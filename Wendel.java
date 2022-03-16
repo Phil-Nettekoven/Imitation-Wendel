@@ -25,6 +25,7 @@ class Wendel extends Thread {
 
         while (isRunning) {
             mainMenu();
+
             if (invalidInput) {
                 System.out.print("Invalid Input!\n");
                 System.out.print("Enter an option: ");
@@ -86,7 +87,8 @@ class Wendel extends Thread {
 
     }
 
-    public static void playPattern(File[] samples, Pattern pattern, double bpm)
+    public static void playPattern(File[] samples, Pattern pattern, double bpm) // needs rework to support new
+                                                                                // structure.
             throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
 
         cls();
@@ -94,7 +96,7 @@ class Wendel extends Thread {
         AudioInputStream stream = null;
         Clip clip = null;
         Timer clock = new Timer();
-        System.out.println("BPM :"+bpm);
+        System.out.println("BPM :" + bpm);
 
         long bpmLong = (long) (((1 / ((double) bpm / 60)) * 1000) / 2); // converts bpm into milliseconds between beats
                                                                         // in 4/
@@ -102,16 +104,22 @@ class Wendel extends Thread {
 
         clock.scheduleAtFixedRate(new patternTask(), 0, bpmLong);
         File blank = new File("BLANK");
-        byte beat;
-        for (int i = 0; i < pattern.getSize(); i++) {
-            beat = pattern.getBeat(i).getBeatArray()[0];
-            if (samples[beat].equals(blank)){
-                synchronized (signalMain) {
-                    signalMain.wait();
+        boolean[] beat;
+        for (int i = -1; i < pattern.getSize(); i++) {
+            if (i < 0) {
+                clip = queueSound(stream, clip, blank);
+                clipStart(clip);
+            } else {
+
+                beat = pattern.getBeat(i).getBeatArray();
+                if (!beat[0]) {
+                    synchronized (signalMain) {
+                        signalMain.wait();
+                    }
+                } else {
+                    clip = queueSound(stream, clip, blank); // TEMP TEMP TEMP TEMP TEMP temp TEMP
+                    clipStart(clip);
                 }
-            } else{
-            clip = queueSound(stream, clip, samples[beat]);
-            clipStart(clip);
             }
         }
 
@@ -135,51 +143,60 @@ class Wendel extends Thread {
 
     public static Pattern editPattern(Pattern curPattern) {
         int index = 1;
-        if (index > 0){
+        if (index > 0) {
             displayBar(curPattern, index);
-        } else{
-            System.out.println("Error, index must be 1 or greater, but is "+index);
+        } else {
+            System.out.println("Error, index must be 1 or greater, but is " + index);
         }
 
         String test = scanner.nextLine();
-        System.out.println("test" +test);
+        System.out.println("test" + test);
         return curPattern;
     }
 
-    public static void displayBar(Pattern curPattern, int i){
+    public static void displayBar(Pattern curPattern, int i) {
         cls();
-        int barIndex = i;
-        boolean[][] barBools = getBarBools(curPattern, barIndex);
-        char x = 'x';
-        System.out.print("           _______________BAR "+ ((i/8)+1)+"________________\n");
+        int barIndex = ((i / 8) + 1);
+        char[][] barChars = getBarChars(curPattern, barIndex);
+
+        System.out.print("           _______________BAR " + barIndex + "________________\n");
         System.out.print("          |   1    |   2    |   3    |   4    |\n");
-        System.out.print("CUSTOM 2  |"+beatDisplay(barBools[0][5])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("CUSTOM 1  |"+beatDisplay(barBools[0][4])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("OPEN HAT  |"+beatDisplay(barBools[0][3])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("CLOSED HAT|"+beatDisplay(barBools[0][2])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("KICK      |"+beatDisplay(barBools[0][1])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("SNARE     |"+beatDisplay(barBools[0][0])+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |"+x+"   "+x+"   |\n");
-        System.out.print("           ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n");
-        
+        System.out.print("CUSTOM 2  |" + barChars[0][5] + "   " + barChars[1][5] + "   |" + barChars[2][5] + "   "
+                + barChars[3][5] + "   |" + barChars[4][5] + "   " + barChars[5][5] + "   |" + barChars[6][5] + "   "
+                + barChars[7][5] + "   |\n");
+        System.out.print("CUSTOM 1  |" + barChars[0][4] + "   " + barChars[1][4] + "   |" + barChars[2][4] + "   "
+                + barChars[3][4] + "   |" + barChars[4][4] + "   " + barChars[5][4] + "   |" + barChars[6][4] + "   "
+                + barChars[7][4] + "   |\n");
+        System.out.print("OPEN HAT  |" + barChars[0][3] + "   " + barChars[1][3] + "   |" + barChars[2][3] + "   "
+                + barChars[3][3] + "   |" + barChars[4][3] + "   " + barChars[5][3] + "   |" + barChars[6][3] + "   "
+                + barChars[7][3] + "   |\n");
+        System.out.print("CLOSED HAT|" + barChars[0][2] + "   " + barChars[1][2] + "   |" + barChars[2][2] + "   "
+                + barChars[3][2] + "   |" + barChars[4][2] + "   " + barChars[5][2] + "   |" + barChars[6][2] + "   "
+                + barChars[7][2] + "   |\n");
+        System.out.print("SNARE     |" + barChars[0][1] + "   " + barChars[1][1] + "   |" + barChars[2][1] + "   "
+                + barChars[3][1] + "   |" + barChars[4][1] + "   " + barChars[5][1] + "   |" + barChars[6][1] + "   "
+                + barChars[7][1] + "   |\n");
+        System.out.print("KICK      |" + barChars[0][0] + "   " + barChars[1][0] + "   |" + barChars[2][0] + "   "
+                + barChars[3][0] + "   |" + barChars[4][0] + "   " + barChars[5][0] + "   |" + barChars[6][0] + "   "
+                + barChars[7][0] + "   |\n");
+        // System.out.print(" |___________________________________|\n");
+
     }
 
-    private static boolean[][] getBarBools(Pattern curPattern, int index){
-        boolean[][] barBeatStatus = new boolean[10][6];
-        for (int i = index; i < (index+4); i++){
-            System.out.print(i);
-            for (int j = 0; j < curPattern.getBeat(i).getStatusArray().length; j++){
-                System.out.print(j);
-                barBeatStatus[i][j] = curPattern.getBeat(i).getStatusArray()[j];
+    private static char[][] getBarChars(Pattern curPattern, int curBar) {
+        char[][] barChars = new char[8][curPattern.getBeat(1).getBeatArray().length];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < curPattern.getBeat(i).getBeatArray().length; j++) {
+                barChars[i][j] = beatDisplay(curPattern.getBeat(i).getBeatArray()[j]);
             }
         }
-
-        return barBeatStatus;
+        return barChars;
     }
 
-    private static char beatDisplay(boolean bool){
-        if (bool){
-            return 'X';
-        } else{
+    private static char beatDisplay(boolean beat) {
+        if (beat) {
+            return 'x';
+        } else {
             return ' ';
         }
     }
@@ -215,36 +232,32 @@ class Wendel extends Thread {
         System.out.flush();
     }
 
-    public static Pattern initPattern(){
+    public static Pattern initPattern() {
 
         Pattern defaultPattern = new Pattern(2);
-        defaultPattern.getBeat(0).setBeats(0, 9);
-        defaultPattern.getBeat(1).setBeats(0, 0);
-        defaultPattern.getBeat(2).setBeats(0, 2);
-        defaultPattern.getBeat(3).setBeats(0, 1);
-        defaultPattern.getBeat(4).setBeats(0, 2);
-        defaultPattern.getBeat(5).setBeats(0, 0);
-        defaultPattern.getBeat(6).setBeats(0, 2);
-        defaultPattern.getBeat(7).setBeats(0, 1);
-        defaultPattern.getBeat(8).setBeats(0, 3);
-        defaultPattern.getBeat(9).setBeats(0, 0);
-        defaultPattern.getBeat(10).setBeats(0, 2);
-        defaultPattern.getBeat(11).setBeats(0, 1);
-        defaultPattern.getBeat(12).setBeats(0, 2);
-        defaultPattern.getBeat(13).setBeats(0, 0);
-        defaultPattern.getBeat(14).setBeats(0, 2);
-        defaultPattern.getBeat(15).setBeats(0, 1);
-        defaultPattern.getBeat(16).setBeats(0, 3);
+        defaultPattern.getBeat(0).toggleChannel(0);
+        defaultPattern.getBeat(1).toggleChannel(2);
+        defaultPattern.getBeat(2).toggleChannel(1);
+        defaultPattern.getBeat(3).toggleChannel(2);
+        defaultPattern.getBeat(4).toggleChannel(0);
+        defaultPattern.getBeat(5).toggleChannel(2);
+        defaultPattern.getBeat(6).toggleChannel(1);
+        defaultPattern.getBeat(7).toggleChannel(3);
+        defaultPattern.getBeat(8).toggleChannel(0);
+        defaultPattern.getBeat(9).toggleChannel(2);
+        defaultPattern.getBeat(10).toggleChannel(1);
+        defaultPattern.getBeat(11).toggleChannel(2);
+        defaultPattern.getBeat(12).toggleChannel(0);
+        defaultPattern.getBeat(13).toggleChannel(2);
+        defaultPattern.getBeat(14).toggleChannel(1);
+        defaultPattern.getBeat(15).toggleChannel(3);
         return defaultPattern;
     }
 
-    public static File[] initKit(){
-        File[] defaultKit = { new File("sounds/kick_16bit.wav"), new
-        File("sounds/snare_16bit.wav"),
-        new File("sounds/CH_16bit.wav"), new File("sounds/OH_16bit.wav"), new
-        File("BLANK"), new File("BLANK"),
-        new File("BLANK"), new File("BLANK"), new File("BLANK"), new
-        File("sounds/silence.wav") };
+    public static File[] initKit() {
+        File[] defaultKit = { new File("sounds/kick_16bit.wav"), new File("sounds/snare_16bit.wav"),
+                new File("sounds/CH_16bit.wav"), new File("sounds/OH_16bit.wav"), new File("BLANK"), new File("BLANK"),
+                new File("BLANK"), new File("BLANK"), new File("BLANK"), new File("sounds/silence.wav") };
 
         return defaultKit;
     }
